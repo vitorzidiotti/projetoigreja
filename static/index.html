@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Cadastro e Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 50px auto;
+    }
+
+    form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    input {
+      margin-bottom: 10px;
+      padding: 8px;
+    }
+
+    button {
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <h2>Cadastro de Usuário</h2>
+  <form id="cadastro-form">
+    <input type="text" name="nome" placeholder="Nome" required />
+    <input type="text" name="cpf" placeholder="CPF" required />
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="senha" placeholder="Senha" required />
+    <button type="submit">Cadastrar</button>
+  </form>
+ 
+  <h2>Login</h2>
+  <form id="login-form">
+    <input type="email" name="email" placeholder="Email" required />
+    <input type="password" name="senha" placeholder="Senha" required />
+    <button type="submit">Entrar</button>
+  </form>
+
+  <p id="resposta"></p>
+
+  <script>
+    async function enviarFormulario(endpoint, formData) {
+      const response = await fetch(`http://localhost:8080/${endpoint}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData)
+      });
+  
+      const contentType = response.headers.get("content-type");
+      if (contentType && contentType.includes("application/json")) {
+        const data = await response.json();
+        return data.message || JSON.stringify(data);
+      } else {
+        return await response.text();
+      }
+    }
+  
+    document.getElementById("cadastro-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const dados = Object.fromEntries(new FormData(e.target).entries());
+      const resposta = await enviarFormulario("cadastrar", dados);
+      document.getElementById("resposta").textContent = resposta;
+    });
+  
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const dados = Object.fromEntries(new FormData(e.target).entries());
+      const resposta = await enviarFormulario("login", dados);
+      document.getElementById("resposta").textContent = resposta;
+    });
+  </script>
+  
+</body>
+
+</html>
